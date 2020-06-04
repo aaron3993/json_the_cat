@@ -1,25 +1,23 @@
-const args = process.argv.slice(2);
 const request = require('request');
 
-// fetchBreedDescription('Siberian', (error, description) {
-
-if (!args[0]) {
-  console.log("Breed not found");
-  return;
-}
-request(`https://api.thecatapi.com/v1/breeds/search?q=${args[0]}`, (error, response, body) => {
-  if (error) {
-    console.log("Error: ", error);
+const fetchBreedDescription = function(breedName, callback) {
+  if (!breedName) {
+    console.log("Breed not found");
     return;
   }
-  const data = JSON.parse(body);
-  if (!data[0]) {
-    console.log(data.error);
-    return;
-  }
-  const description = data[0].description;
-  console.log(description);
-});
-// });
+  request(`https://api.thecatapi.com/v1/breeds/search?q=${breedName}`, (error, response, body) => {
+    if (error) {
+      callback("Error: " + error, null);
+      return;
+    }
+    const data = JSON.parse(body);
+    if (!data[0]) {
+      callback("Breed not found", null);
+      return;
+    }
+    const description = data[0].description;
+    callback(null, description);
+  });
+};
 
-// module.exports = { fetchBreedDescription };
+module.exports = { fetchBreedDescription };
